@@ -8,6 +8,7 @@ public class Employee {
 	private String name;
 	private String jobTitle;
 	private int salary;
+	
 	private LocalDateTime dateOfStartWork;
 	
 	public Employee() {
