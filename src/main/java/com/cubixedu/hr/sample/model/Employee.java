@@ -1,9 +1,17 @@
 package com.cubixedu.hr.sample.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+
+@Entity
 public class Employee {
 
+	@Id
+	@GeneratedValue
 	private Long employeeId;
 	private String name;
 	private String jobTitle;
@@ -67,4 +75,21 @@ public class Employee {
 		this.dateOfStartWork = dateOfStartWork;
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(employeeId);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Employee other = (Employee) obj;
+		return Objects.equals(employeeId, other.employeeId);
+	}
+	
 }
