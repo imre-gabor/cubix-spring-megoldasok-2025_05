@@ -6,6 +6,7 @@ import java.util.Objects;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Employee {
@@ -18,6 +19,9 @@ public class Employee {
 	private int salary;
 	
 	private LocalDateTime dateOfStartWork;
+	
+	@ManyToOne
+	private Company company;
 	
 	public Employee() {
 	}
@@ -90,6 +94,14 @@ public class Employee {
 			return false;
 		Employee other = (Employee) obj;
 		return Objects.equals(employeeId, other.employeeId);
+	}
+
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
 	}
 	
 }
