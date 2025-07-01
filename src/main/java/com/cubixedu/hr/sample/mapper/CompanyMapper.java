@@ -15,7 +15,7 @@ import com.cubixedu.hr.sample.model.Employee;
 
 @Mapper(componentModel = "spring")
 public interface CompanyMapper {
-
+	
 	CompanyDto companyToDto(Company company);
 	
 	@Mapping(target = "employees", ignore = true)
@@ -31,8 +31,9 @@ public interface CompanyMapper {
 	List<Employee> dtosToEmployees(List<EmployeeDto> newEmployees);
 	
 	@Mapping(source="employeeId", target = "id")
-	@Mapping(source="jobTitle", target = "title")
+	@Mapping(source="position.name", target = "title")
 	@Mapping(source="dateOfStartWork", target = "entryDate")
+	@Mapping(target = "company", ignore = true)
 	EmployeeDto employeeToDto(Employee employee);
 
 	@InheritInverseConfiguration

@@ -3,6 +3,9 @@ package com.cubixedu.hr.sample.web;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,8 +46,14 @@ public class EmployeeController {
 	}
 	
 	@GetMapping(params = "minSalary")
-	public List<EmployeeDto> findBySalary(@RequestParam int minSalary){
-		return employeeMapper.employeesToDtos(employeeRepository.findBySalaryGreaterThan(minSalary));
+	public List<EmployeeDto> findBySalary(@RequestParam int minSalary, @SortDefault("employeeId") Pageable pageable){		
+		Page<Employee> page = employeeRepository.findBySalaryGreaterThan(minSalary, pageable);
+		System.out.println(page.getTotalElements());
+		System.out.println(page.hasNext());
+		System.out.println(page.hasPrevious());
+		System.out.println(page.getNumber());
+		System.out.println(page.getSort());
+		return employeeMapper.employeesToDtos(page.getContent());
 	}
 	@GetMapping("/{id}")
 	public EmployeeDto findById(@PathVariable long id) {
