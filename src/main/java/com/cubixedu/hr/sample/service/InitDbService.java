@@ -13,6 +13,7 @@ import com.cubixedu.hr.sample.model.PositionDetailsByCompany;
 import com.cubixedu.hr.sample.model.Qualification;
 import com.cubixedu.hr.sample.repository.CompanyRepository;
 import com.cubixedu.hr.sample.repository.EmployeeRepository;
+import com.cubixedu.hr.sample.repository.HolidayRequestRepository;
 import com.cubixedu.hr.sample.repository.PositionDetailsByCompanyRepository;
 import com.cubixedu.hr.sample.repository.PositionRepository;
 
@@ -31,9 +32,13 @@ public class InitDbService {
 	@Autowired
 	PositionDetailsByCompanyRepository positionDetailsByCompanyRepository;
 	
-	@Transactional
+	@Autowired
+	HolidayRequestRepository holidayRequestRepository;
+	
+	
 	public void clearDb() {
 		positionDetailsByCompanyRepository.deleteAllInBatch();
+		holidayRequestRepository.deleteAllInBatch();
 		employeeRepository.deleteAllInBatch();
 		positionRepository.deleteAllInBatch();
 		companyRepository.deleteAllInBatch();
