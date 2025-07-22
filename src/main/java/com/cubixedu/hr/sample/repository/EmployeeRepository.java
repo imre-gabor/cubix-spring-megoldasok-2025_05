@@ -2,6 +2,7 @@ package com.cubixedu.hr.sample.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,4 +29,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 			+ "AND e.salary < :minSalary")
 	@Modifying
 	public void updateSalaries(long companyId, String positionName, int minSalary);
+
+	Optional<Employee> findByUsername(String username);
 }

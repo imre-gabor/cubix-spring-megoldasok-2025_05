@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -17,6 +19,7 @@ import com.cubixedu.hr.sample.dto.HolidayRequestFilterDto;
 import com.cubixedu.hr.sample.model.Employee;
 import com.cubixedu.hr.sample.model.HolidayRequest;
 import com.cubixedu.hr.sample.repository.HolidayRequestRepository;
+import com.cubixedu.hr.sample.security.HrUser;
 
 
 @Service
@@ -71,9 +74,16 @@ public class HolidayRequestService {
 	}
 
 	@Transactional
-	public HolidayRequest approveHolidayRequest(long id, long approverId, boolean status) {
+	public HolidayRequest approveHolidayRequest(long id, boolean status) {
 		HolidayRequest holidayRequest = holidayRequestRepository.findById(id).get();
-		holidayRequest.setApprover(employeeService.findById(approverId).get());
+		
+
+		var currentUser = getCurrentUser();
+		if(!currentUser.getEmployee().getEmployeeId().equals(holidayRequest.getEmployee().getManager().getEmployeeId())) {
+			throw new AccessDeniedException("Only the manager of the employee can approve a request.");
+		}
+		
+		holidayRequest.setApprover(currentUser.getEmployee());
 		holidayRequest.setApproved(status);
 		holidayRequest.setApprovedAt(LocalDateTime.now());
 		return holidayRequest;
@@ -83,7 +93,7 @@ public class HolidayRequestService {
 	public HolidayRequest modifyHolidayRequest(long id, HolidayRequest newHolidayRequest) {
 		HolidayRequest holidayRequest = holidayRequestRepository.findById(id).get();
 		if (holidayRequest.getApproved() != null)
-			throw new IllegalStateException();
+			throw new IllegalStateException();				
 		holidayRequest.setEndDate(newHolidayRequest.getEndDate());
 		holidayRequest.setStartDate(newHolidayRequest.getStartDate());
 		holidayRequest.setCreatedAt(LocalDateTime.now());
@@ -95,8 +105,18 @@ public class HolidayRequestService {
 		HolidayRequest holidayRequest = holidayRequestRepository.findById(id).get();
 		if (holidayRequest.getApproved() != null)
 			throw new IllegalArgumentException();
+		
+		var currentUser = getCurrentUser();
+		if(!currentUser.getEmployee().getEmployeeId().equals(holidayRequest.getEmployee().getEmployeeId())) {
+			throw new AccessDeniedException("Trying to delete request of other employee.");
+		}
+		
 		holidayRequest.getEmployee().getHolidayRequests().remove(holidayRequest);
 		holidayRequestRepository.deleteById(id);
+	}
+
+	private HrUser getCurrentUser() {
+		return (HrUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
 
 }
